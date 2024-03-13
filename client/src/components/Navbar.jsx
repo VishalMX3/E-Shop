@@ -95,7 +95,7 @@ const Navbar = () => {
           </Link>
         </Center>
         <Right>
-          <AdminLink href="https://e-com-admin-5i8r.onrender.com/">
+          <AdminLink href="https://e-shop-admin-xxa1.onrender.com/">
             ADMIN
           </AdminLink>
           <Link to="/register">

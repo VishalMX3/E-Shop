@@ -3,7 +3,7 @@ import { Search, ShoppingCartOutlined, KeyboardArrowDown } from "@mui/icons-mate
 import React, { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../redux/apiCalls";
 import { resetCart } from "../redux/cartRedux";
@@ -65,15 +65,24 @@ const Right = styled.div`
 `;
 
 const MenuItem = styled.div`
-  /* display: flex; */
+  display: flex;
   font-size: 18px;
+  margin-top: auto;
   cursor: pointer;
   margin-left: 25px;
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
 `;
 
-const DropdownContainer = styled.div`
-  position: relative;
+const AdminLink = styled.a`
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 25px;
+  ${mobile({ fontSize: "12px", marginLeft: "10px" })}
+`;
+
+const DropdownArrow = styled(KeyboardArrowDown)`
+  margin-left: 5px;
 `;
 
 const DropdownContent = styled.div`
@@ -91,16 +100,8 @@ const DropdownItem = styled.div`
   cursor: pointer;
 `;
 
-const AdminLink = styled.a`
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  margin-left: 25px;
-  ${mobile({ fontSize: "12px", marginLeft: "10px" })}
-`;
-
-const DropdownArrow = styled(KeyboardArrowDown)`
-  margin-left: 5px;
+const DropdownContainer = styled.div`
+  position: relative;
 `;
 
 const Navbar = () => {
@@ -135,19 +136,34 @@ const Navbar = () => {
         <Right>
           {user ? (
             <>
-            {user.userName === "admin" && (
-                <AdminLink href="https://e-shop-admin-xxa1.onrender.com/">
-                  ADMIN PORTAL
-                </AdminLink>
-            )}
-            <DropdownContainer>
-              <MenuItem onClick={() => setIsOpen(!isOpen)}>
-                Hi {user.userName} <DropdownArrow />
-              </MenuItem>
-              <DropdownContent isOpen={isOpen}>
-                <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
-              </DropdownContent>
-            </DropdownContainer>
+              {user.userName !== "admin" && (
+                <>
+                <DropdownContainer>
+
+                  <MenuItem onClick={() => setIsOpen(!isOpen)}>
+                      Hi {user.userName} <DropdownArrow />
+                  </MenuItem>
+                  <DropdownContent isOpen={isOpen}>
+                  <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+                  </DropdownContent>
+                </DropdownContainer>
+                </>
+              )}
+              {user.userName === "admin" && (
+                <>
+                  <AdminLink href="https://e-shop-admin-xxa1.onrender.com/" target="_blank" rel="noopener noreferrer">
+                    Admin Portal
+                  </AdminLink>
+                  <DropdownContainer>
+                  <MenuItem onClick={() => setIsOpen(!isOpen)}>
+                    Hi {user.userName} <DropdownArrow />
+                  </MenuItem>
+                  <DropdownContent isOpen={isOpen}>
+                  <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+                  </DropdownContent>
+                </DropdownContainer>               
+                </>
+              )}
             </>
           ) : (
             <>

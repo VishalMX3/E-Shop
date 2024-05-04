@@ -1,10 +1,12 @@
 import { Badge } from "@mui/material";
-import { Search, ShoppingCartOutlined } from "@mui/icons-material";
-import React from "react";
+import { Search, ShoppingCartOutlined, KeyboardArrowDown } from "@mui/icons-material";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { mobile } from "../responsive";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../redux/apiCalls";
+import { resetCart } from "../redux/cartRedux";
 
 const Container = styled.div`
   height: 60px;
@@ -63,10 +65,30 @@ const Right = styled.div`
 `;
 
 const MenuItem = styled.div`
+  /* display: flex; */
   font-size: 18px;
   cursor: pointer;
   margin-left: 25px;
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
+`;
+
+const DropdownContainer = styled.div`
+  position: relative;
+`;
+
+const DropdownContent = styled.div`
+  display: ${({ isOpen }) => (isOpen ? "block" : "none")};
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+`;
+
+const DropdownItem = styled.div`
+  padding: 10px;
+  cursor: pointer;
 `;
 
 const AdminLink = styled.a`
@@ -77,9 +99,23 @@ const AdminLink = styled.a`
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
 `;
 
+const DropdownArrow = styled(KeyboardArrowDown)`
+  margin-left: 5px;
+`;
+
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
   const user = useSelector((state) => state.user.currentUser);
+  const dispatch = useDispatch();
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout(dispatch);
+    setIsOpen(false);
+    dispatch(resetCart());
+    navigate("/");
+  };
 
   return (
     <Container>
@@ -99,23 +135,19 @@ const Navbar = () => {
         <Right>
           {user ? (
             <>
-              {user.userName !== "admin" && (
-                <>
-                  <MenuItem>Hi {user.userName}</MenuItem>
-                  <Link to="/cart">
-                    <MenuItem>
-                      <Badge badgeContent={quantity} color="primary">
-                        <ShoppingCartOutlined />
-                      </Badge>
-                    </MenuItem>
-                  </Link>
-                </>
-              )}
-              {user.userName === "admin" && (
+            {user.userName === "admin" && (
                 <AdminLink href="https://e-shop-admin-xxa1.onrender.com/">
-                  ADMIN
+                  ADMIN PORTAL
                 </AdminLink>
-              )}
+            )}
+            <DropdownContainer>
+              <MenuItem onClick={() => setIsOpen(!isOpen)}>
+                Hi {user.userName} <DropdownArrow />
+              </MenuItem>
+              <DropdownContent isOpen={isOpen}>
+                <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+              </DropdownContent>
+            </DropdownContainer>
             </>
           ) : (
             <>
@@ -127,6 +159,13 @@ const Navbar = () => {
               </Link>
             </>
           )}
+          <Link to="/cart">
+            <MenuItem>
+              <Badge badgeContent={quantity} color="primary">
+                <ShoppingCartOutlined />
+              </Badge>
+            </MenuItem>
+          </Link>
         </Right>
       </Wrapper>
     </Container>

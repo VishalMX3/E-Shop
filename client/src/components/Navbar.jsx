@@ -63,7 +63,7 @@ const Right = styled.div`
 `;
 
 const MenuItem = styled.div`
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
   margin-left: 25px;
   ${mobile({ fontSize: "12px", marginLeft: "10px" })}
@@ -79,6 +79,8 @@ const AdminLink = styled.a`
 
 const Navbar = () => {
   const quantity = useSelector((state) => state.cart.quantity);
+  const user = useSelector((state) => state.user.currentUser);
+
   return (
     <Container>
       <Wrapper>
@@ -95,22 +97,36 @@ const Navbar = () => {
           </Link>
         </Center>
         <Right>
-          <AdminLink href="https://e-shop-admin-xxa1.onrender.com/">
-            ADMIN
-          </AdminLink>
-          <Link to="/register">
-            <MenuItem>SIGNUP</MenuItem>
-          </Link>
-          <Link to="/login  ">
-            <MenuItem>LOGIN</MenuItem>
-          </Link>
-          <Link to="/cart">
-            <MenuItem>
-              <Badge badgeContent={quantity} color="primary">
-                <ShoppingCartOutlined />
-              </Badge>
-            </MenuItem>
-          </Link>
+          {user ? (
+            <>
+              {user.userName !== "admin" && (
+                <>
+                  <MenuItem>Hi {user.userName}</MenuItem>
+                  <Link to="/cart">
+                    <MenuItem>
+                      <Badge badgeContent={quantity} color="primary">
+                        <ShoppingCartOutlined />
+                      </Badge>
+                    </MenuItem>
+                  </Link>
+                </>
+              )}
+              {user.userName === "admin" && (
+                <AdminLink href="https://e-shop-admin-xxa1.onrender.com/">
+                  ADMIN
+                </AdminLink>
+              )}
+            </>
+          ) : (
+            <>
+              <Link to="/register">
+                <MenuItem>SIGNUP</MenuItem>
+              </Link>
+              <Link to="/login">
+                <MenuItem>LOGIN</MenuItem>
+              </Link>
+            </>
+          )}
         </Right>
       </Wrapper>
     </Container>
